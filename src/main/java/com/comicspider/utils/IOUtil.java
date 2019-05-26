@@ -1,7 +1,6 @@
 package com.comicspider.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -14,7 +13,7 @@ public class IOUtil {
         File file=new File(path);
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdirs();
-        };
+        }
         try {
             FileOutputStream out=new FileOutputStream(file);
             out.write(content);

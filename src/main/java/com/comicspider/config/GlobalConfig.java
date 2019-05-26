@@ -1,11 +1,13 @@
 package com.comicspider.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @Author doctor
  * @Date 19-5-15
  **/
+@Configuration
 public class GlobalConfig {
     public static String USER_AGENT;
 
@@ -14,6 +16,11 @@ public class GlobalConfig {
         USER_AGENT = userAgent;
     }
 
-    public static String PROXY_URL;
+    public static String ROOT_PATH;
+
+    @Value("${comicSpider.root-path}")
+    public void setRootPath(String rootPath){
+        ROOT_PATH=rootPath;
+    }
 
 }
