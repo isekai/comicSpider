@@ -18,6 +18,11 @@ public class ComicTagServiceImpl implements ComicTagService {
     private ComicTagRepository comicTagRepository;
 
     @Override
+    public ComicTag findByComicIdAndTagId(int comicId, int tagId) {
+        return comicTagRepository.findByComicIdAndTagId(comicId, tagId);
+    }
+
+    @Override
     public List<ComicTag> findAllByTagId(int tagId) {
         return comicTagRepository.findAllByTagId(tagId);
     }

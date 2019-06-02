@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 /**
+ * 全局配置类
  * @Author doctor
  * @Date 19-5-15
  **/

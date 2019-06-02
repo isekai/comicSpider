@@ -1,5 +1,6 @@
 package com.comicspider.utils;
 
+import com.comicspider.cartoonmad.dto.Cartoonmad;
 import com.comicspider.cartoonmad.parser.HtmlParser;
 import com.comicspider.config.GlobalConfig;
 import lombok.extern.slf4j.Slf4j;
@@ -30,11 +31,11 @@ public class UtilsTest {
     }
 
     @Test
-    public void getComic(){
+    public void getCartoonmad(){
         byte[] html=HttpUtil.get("https://www.cartoonmad.com/comic/1412.html", null);
         Assert.assertNotNull(html);
         try {
-            HtmlParser.getComic(new String(html,"Big5"));
+            Cartoonmad cartoonmad=HtmlParser.getCartoonmad(new String(html,"Big5"));
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -24,4 +24,8 @@ public class Tag {
      * 标签名
      */
     private String tagName;
+
+    public Tag(String tagName) {
+        this.tagName = tagName;
+    }
 }

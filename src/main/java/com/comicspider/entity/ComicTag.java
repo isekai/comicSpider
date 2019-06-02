@@ -29,4 +29,9 @@ public class ComicTag {
      * 标签id
      */
     private int tagId;
+
+    public ComicTag(int comicId, int tagId) {
+        this.comicId = comicId;
+        this.tagId = tagId;
+    }
 }

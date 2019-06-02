@@ -7,4 +7,5 @@ import com.comicspider.entity.Tag;
  * @Date 19-5-8
  **/
 public interface TagService extends CurdService<Tag> {
+    Tag findByTagName(String tagName);
 }

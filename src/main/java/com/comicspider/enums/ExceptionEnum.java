@@ -8,7 +8,8 @@ import lombok.Getter;
  **/
 
 public enum  ExceptionEnum {
-    NOT_DOWNLOAD(9999,"下载失败");
+    NOT_DOWNLOAD(9999,"下载失败"),
+    CONNECT_TIMEOUT(500,"连接超时");
 
     @Getter
     private int code;
