@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * 全局配置类
+ * 全局配置类01
  * @Author doctor
  * @Date 19-5-15
  **/
@@ -22,6 +22,13 @@ public class GlobalConfig {
     @Value("${comicSpider.root-path}")
     public void setRootPath(String rootPath){
         ROOT_PATH=rootPath;
+    }
+
+    public static String CARTOONMAD_URL;
+
+    @Value("${comicSpider.cartoonmad-url}")
+    public void setCartoonmadUrl(String cartoonmadUrl){
+        CARTOONMAD_URL=cartoonmadUrl;
     }
 
 }

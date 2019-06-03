@@ -22,4 +22,8 @@ public class IOUtil {
             e.printStackTrace();
         }
     }
+
+    public static void writeZipFile(String path){
+
+    }
 }

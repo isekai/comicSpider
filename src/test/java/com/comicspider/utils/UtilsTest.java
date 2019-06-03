@@ -3,6 +3,7 @@ package com.comicspider.utils;
 import com.comicspider.cartoonmad.dto.Cartoonmad;
 import com.comicspider.cartoonmad.parser.HtmlParser;
 import com.comicspider.config.GlobalConfig;
+import com.comicspider.entity.Proxy;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -24,7 +25,7 @@ public class UtilsTest {
     @Test
     public void getPic(){
 //        Proxy proxy=new Proxy("1.198.72.22",9999,"http");
-        byte[] pic=HttpUtil.get("https://www.cartoonmad.com/cartoonimgs/coimg/1412.jpg",null);
+        byte[] pic=HttpUtil.getByte("https://www.cartoonmad.com/cartoonimgs/coimg/1412.jpg",null);
         Assert.assertNotNull(pic);
         System.out.println(GlobalConfig.ROOT_PATH);
         IOUtil.writeFile(GlobalConfig.ROOT_PATH +"1412.jpg", pic);
@@ -32,7 +33,7 @@ public class UtilsTest {
 
     @Test
     public void getCartoonmad(){
-        byte[] html=HttpUtil.get("https://www.cartoonmad.com/comic/1412.html", null);
+        byte[] html=HttpUtil.getByte("https://www.cartoonmad.com/comic/1412.html", null);
         Assert.assertNotNull(html);
         try {
             Cartoonmad cartoonmad=HtmlParser.getCartoonmad(new String(html,"Big5"));
@@ -40,4 +41,5 @@ public class UtilsTest {
             e.printStackTrace();
         }
     }
+
 }

@@ -17,4 +17,9 @@ public class SpiderException extends RuntimeException {
         this.code = e.getCode();
         this.msg = e.getMsg();
     }
+
+    public SpiderException(int code,String msg) {
+        this.code = code;
+        this.msg = msg;
+    }
 }
