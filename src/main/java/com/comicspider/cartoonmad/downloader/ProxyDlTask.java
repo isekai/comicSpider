@@ -1,6 +1,7 @@
 package com.comicspider.cartoonmad.downloader;
 
 import com.comicspider.cartoonmad.parser.HtmlParser;
+import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Proxy;
 import com.comicspider.service.ProxyService;
 import com.comicspider.utils.HttpUtil;
@@ -13,8 +14,6 @@ import java.util.List;
  * @Date 19-6-3
  **/
 public class ProxyDlTask implements Runnable {
-    @Setter
-    private String taskId;
     @Setter
     private String url;
     @Setter
@@ -29,7 +28,7 @@ public class ProxyDlTask implements Runnable {
         String html=new String(HttpUtil.getByte(url, null));
         List<Proxy> proxies= HtmlParser.getProxy(html);
         for (Proxy proxy : proxies){
-            if (HttpUtil.getByte("http://httpbin.org/get", proxy).length!=0){
+            if (proxyService.findByIp(proxy.getIp())==null && HttpUtil.getByte(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
                 proxyService.saveOrUpdate(proxy);
             }
         }

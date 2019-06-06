@@ -31,4 +31,11 @@ public class GlobalConfig {
         CARTOONMAD_URL=cartoonmadUrl;
     }
 
+    public static String PROXY_TEST_URL;
+
+    @Value("${comicSpider.proxy-test-url}")
+    public void setProxyTestUrl(String proxyTestUrl){
+        PROXY_TEST_URL=proxyTestUrl;
+    }
+
 }

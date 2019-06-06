@@ -18,11 +18,6 @@ public class ProxyServiceImpl implements ProxyService {
     private ProxyRepository proxyRepository;
 
     @Override
-    public List<Proxy> findAllByIp(String ip) {
-        return proxyRepository.findAllByIp(ip);
-    }
-
-    @Override
     public Proxy findById(int id) {
         return proxyRepository.findById(id).orElse(null);
     }
@@ -35,5 +30,10 @@ public class ProxyServiceImpl implements ProxyService {
     @Override
     public void deleteById(int id) {
         proxyRepository.deleteById(id);
+    }
+
+    @Override
+    public Proxy findByIp(String ip) {
+        return proxyRepository.findByIp(ip);
     }
 }

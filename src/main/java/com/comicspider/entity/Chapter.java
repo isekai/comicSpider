@@ -40,6 +40,9 @@ public class Chapter implements Serializable {
      */
     private String chapterName;
 
+    public Chapter() {
+    }
+
     public Chapter(int pageNum, String chapterName) {
         this.pageNum = pageNum;
         this.chapterName = chapterName;

@@ -21,8 +21,6 @@ import java.util.Map;
  **/
 public class ComicDlTask implements Runnable {
     @Setter
-    private String taskId;
-    @Setter
     private Map<String,Proxy> comicForDownload;
     @Setter
     private ComicService comicService;
@@ -71,6 +69,8 @@ public class ComicDlTask implements Runnable {
                 comicTagService.saveOrUpdate(comicTag);
             }
         }
-        chapterService.saveKeyVaule(chapters);
+        for (String url : chapters.keySet()){
+            chapterService.saveOrUpdate(chapters.get(url));
+        }
     }
 }

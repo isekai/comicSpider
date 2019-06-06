@@ -3,6 +3,7 @@ package com.comicspider.utils;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @Author doctor
@@ -23,7 +24,6 @@ public class IOUtil {
         }
     }
 
-    public static void writeZipFile(String path){
-
+    public static void ZipFileOutput(String path){
     }
 }

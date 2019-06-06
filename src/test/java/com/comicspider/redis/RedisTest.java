@@ -1,5 +1,6 @@
 package com.comicspider.redis;
 
+import com.comicspider.entity.Chapter;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,11 +17,12 @@ import org.springframework.test.context.junit4.SpringRunner;
 @SpringBootTest
 public class RedisTest {
     @Autowired
-    private RedisTemplate<String,String> redisTemplate;
+    private RedisTemplate<String,Object> redisTemplate;
 
     @Test
     public void addUrl(){
-        redisTemplate.opsForValue().set("1","baidu.com");
-        Assert.assertEquals("baidu.com",redisTemplate.opsForValue().get("1"));
+        Chapter chapter=new Chapter(19, "第X话");
+        redisTemplate.opsForValue().set("1",chapter);
+        Assert.assertEquals(chapter,redisTemplate.opsForValue().get("1"));
     }
 }

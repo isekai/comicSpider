@@ -10,7 +10,6 @@ import java.util.Map;
  * @Date 19-5-8
  **/
 public interface ChapterService extends CurdService<Chapter> {
-    void saveKeyVaule(Map<String,Chapter> chapters);
     Chapter findByChapterName(String chapterName);
     List<Chapter> findAllDownloaded(int comicId);
     List<Chapter> findAllNotDownloaded(int comicId);

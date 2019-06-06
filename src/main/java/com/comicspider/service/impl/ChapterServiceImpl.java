@@ -45,15 +45,6 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
-    public void saveKeyVaule(Map<String,Chapter> chapters) {
-        chapterRepository.saveAll(chapters.values());
-        for(String url : chapters.keySet()){
-            redisTemplate.opsForValue().set(url, chapters.get(url));
-        }
-
-    }
-
-    @Override
     public void saveOrUpdate(Chapter chapter) {
         chapterRepository.save(chapter);
     }

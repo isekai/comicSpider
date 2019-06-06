@@ -26,13 +26,9 @@ public class ProxyController {
         DeferredResult deferredResult = new DeferredResult();
         ProxyDlTask proxyDlTask;
         proxyDlTask=new ProxyDlTask(proxyService);
-        proxyDlTask.setTaskId("proxy-1");
         proxyDlTask.setUrl("https://www.xicidaili.com/nn/");
-        ExecutorService executorService = new ThreadPoolExecutor(2, 2,
-                0, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(512),
-                new ThreadPoolExecutor.DiscardPolicy());
-        executorService.execute(proxyDlTask);
+        ScheduledThreadPoolExecutor executorService = new ScheduledThreadPoolExecutor(1);
+        executorService.scheduleAtFixedRate(proxyDlTask, 0, 1, TimeUnit.DAYS);
         return deferredResult;
 
     }
