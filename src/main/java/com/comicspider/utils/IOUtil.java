@@ -1,8 +1,8 @@
 package com.comicspider.utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
+import java.util.Map;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -24,6 +24,25 @@ public class IOUtil {
         }
     }
 
-    public static void ZipFileOutput(String path){
+    public static void ZipFileOutput(String path, Map<String,byte[]> data){
+        File zipFile=new File(path);
+        if (!zipFile.getParentFile().exists()){
+            zipFile.mkdirs();
+        }
+        try {
+            FileOutputStream fos=new FileOutputStream(zipFile);
+            ZipOutputStream zos = new ZipOutputStream(fos);
+            ZipEntry zipEntry;
+            for (String dataFileName : data.keySet()){
+                zipEntry=new ZipEntry(dataFileName);
+                zos.putNextEntry(zipEntry);
+                zos.write(data.get(dataFileName));
+            }
+            zos.closeEntry();
+            zos.close();
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,15 +1,20 @@
 package com.comicspider.cartoonmad.downloader;
 
-import com.comicspider.cartoonmad.parser.HtmlParser;
 import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Proxy;
 import com.comicspider.service.ProxyService;
+import com.comicspider.service.RedisService;
 import com.comicspider.utils.HttpUtil;
 import lombok.Setter;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
+ * 代理爬虫线程任务
  * @Author doctor
  * @Date 19-6-3
  **/
@@ -18,6 +23,8 @@ public class ProxyDlTask implements Runnable {
     private String url;
     @Setter
     private ProxyService proxyService;
+    @Setter
+    private RedisService redisService;
 
     public ProxyDlTask(ProxyService proxyService) {
         this.proxyService = proxyService;
@@ -25,12 +32,28 @@ public class ProxyDlTask implements Runnable {
 
     @Override
     public void run() {
-        String html=new String(HttpUtil.getByte(url, null));
-        List<Proxy> proxies= HtmlParser.getProxy(html);
+        String html=new String(HttpUtil.get(url));
+        List<Proxy> proxies= getProxy(html);
         for (Proxy proxy : proxies){
-            if (proxyService.findByIp(proxy.getIp())==null && HttpUtil.getByte(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
+            if (redisService.get(proxy.getIp())==null && HttpUtil.get(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
+                redisService.set(proxy.getIp(), proxy);
                 proxyService.saveOrUpdate(proxy);
             }
         }
+    }
+
+    private List<Proxy> getProxy(String html){
+        List<Proxy> proxies=new LinkedList<>();
+        Proxy proxy;
+        Document doc= Jsoup.parse(html);
+        Elements elements = doc.getElementsByTag("tr");
+        for (int i=1;i<elements.size();i++){
+            proxy=new Proxy();
+            proxy.setIp(elements.get(i).child(1).text());
+            proxy.setPort(Integer.parseInt(elements.get(i).child(2).text()));
+            proxy.setType(elements.get(i).child(5).text());
+            proxies.add(proxy);
+        }
+        return proxies;
     }
 }

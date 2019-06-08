@@ -5,7 +5,6 @@ import com.comicspider.entity.Chapter;
 import com.comicspider.enums.DownloadedEnum;
 import com.comicspider.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,9 +16,6 @@ import java.util.Map;
  **/
 @Service
 public class ChapterServiceImpl implements ChapterService {
-
-    @Autowired
-    private RedisTemplate<String,Object> redisTemplate;
 
     @Autowired
     private ChapterRepository chapterRepository;
