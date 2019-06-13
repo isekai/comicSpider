@@ -25,6 +25,8 @@ public class Tag {
      */
     private String tagName;
 
+    public Tag(){}
+
     public Tag(String tagName) {
         this.tagName = tagName;
     }

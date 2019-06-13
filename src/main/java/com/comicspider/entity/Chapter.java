@@ -36,6 +36,11 @@ public class Chapter implements Serializable {
     private int pageNum;
 
     /**
+     * 章节类型
+     */
+    private int chapterType;
+
+    /**
      * 章节名
      */
     private String chapterName;
@@ -43,8 +48,5 @@ public class Chapter implements Serializable {
     public Chapter() {
     }
 
-    public Chapter(int pageNum, String chapterName) {
-        this.pageNum = pageNum;
-        this.chapterName = chapterName;
-    }
+
 }

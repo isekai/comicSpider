@@ -21,7 +21,9 @@ public class RedisTest {
 
     @Test
     public void addUrl(){
-        Chapter chapter=new Chapter(19, "第X话");
+        Chapter chapter=new Chapter();
+        chapter.setChapterName("第x话");
+        chapter.setPageNum(19);
         redisTemplate.opsForValue().set("1",chapter);
         Assert.assertEquals(chapter,redisTemplate.opsForValue().get("1"));
     }

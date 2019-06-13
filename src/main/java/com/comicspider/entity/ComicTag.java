@@ -30,6 +30,8 @@ public class ComicTag {
      */
     private int tagId;
 
+    public ComicTag(){}
+
     public ComicTag(int comicId, int tagId) {
         this.comicId = comicId;
         this.tagId = tagId;

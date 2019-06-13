@@ -1,9 +1,9 @@
 package com.comicspider.service;
 
-import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Author doctor

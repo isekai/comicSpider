@@ -8,6 +8,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
+
 /**
  * @Author doctor
  * @Date 19-5-23
@@ -32,5 +34,9 @@ public class UtilsTest {
         IOUtil.writeFile(GlobalConfig.ROOT_PATH+"001.jpg", data);
     }
 
-
+    @Test
+    public void zipTest(){
+        Map<String,byte[]> data=IOUtil.zipFileInput(GlobalConfig.ROOT_PATH+"第001话");
+        Assert.assertEquals(14, data.size());
+    }
 }

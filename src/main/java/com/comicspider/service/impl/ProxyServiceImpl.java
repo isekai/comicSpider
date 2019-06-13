@@ -4,6 +4,10 @@ import com.comicspider.dao.ProxyRepository;
 import com.comicspider.entity.Proxy;
 import com.comicspider.service.ProxyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,5 +39,11 @@ public class ProxyServiceImpl implements ProxyService {
     @Override
     public Proxy findByIp(String ip) {
         return proxyRepository.findByIp(ip);
+    }
+
+    @Override
+    public Page<Proxy> findAllByCreateTimeIn(int page, int size) {
+        Pageable pageable=PageRequest.of(page, size);
+        return proxyRepository.findAll(pageable);
     }
 }

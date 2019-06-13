@@ -10,7 +10,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,8 +23,6 @@ public class ProxyDlTask implements Runnable {
     private String url;
     @Setter
     private ProxyService proxyService;
-    @Setter
-    private RedisService redisService;
 
     public ProxyDlTask(ProxyService proxyService) {
         this.proxyService = proxyService;
@@ -35,15 +33,14 @@ public class ProxyDlTask implements Runnable {
         String html=new String(HttpUtil.get(url));
         List<Proxy> proxies= getProxy(html);
         for (Proxy proxy : proxies){
-            if (redisService.get(proxy.getIp())==null && HttpUtil.get(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
-                redisService.set(proxy.getIp(), proxy);
+            if (proxyService.findByIp(proxy.getIp())==null && HttpUtil.get(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
                 proxyService.saveOrUpdate(proxy);
             }
         }
     }
 
     private List<Proxy> getProxy(String html){
-        List<Proxy> proxies=new LinkedList<>();
+        List<Proxy> proxies=new ArrayList<>();
         Proxy proxy;
         Document doc= Jsoup.parse(html);
         Elements elements = doc.getElementsByTag("tr");

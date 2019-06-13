@@ -10,6 +10,13 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration
 public class GlobalConfig {
+    public static int POOL_SIZE;
+
+    @Value("${comciSpider.pool-size}")
+    public void setPoolSize(int poolSize){
+        POOL_SIZE=poolSize;
+    }
+
     public static String USER_AGENT;
 
     @Value("${comicSpider.user-agent}")
@@ -37,5 +44,6 @@ public class GlobalConfig {
     public void setProxyTestUrl(String proxyTestUrl){
         PROXY_TEST_URL=proxyTestUrl;
     }
+
 
 }
