@@ -1,10 +1,12 @@
 package com.comicspider.cartoonmad.downloader;
 
+import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Chapter;
 import com.comicspider.entity.Proxy;
 import com.comicspider.enums.DownloadedEnum;
 import com.comicspider.exception.SpiderException;
 import com.comicspider.service.ChapterService;
+import com.comicspider.service.ComicService;
 import com.comicspider.service.RedisService;
 import com.comicspider.utils.HttpUtil;
 import com.comicspider.utils.IOUtil;
@@ -12,6 +14,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,13 +24,9 @@ import java.util.Map;
 @Slf4j
 public class FileDlTask implements Runnable{
     @Setter
-    private String basePath;
+    private List<Proxy> proxies;
     @Setter
-    private String baseUrl;
-    @Setter
-    private Chapter chapter;
-    @Setter
-    private Proxy proxy;
+    private ComicService comicService;
     @Setter
     private RedisService redisService;
     @Setter
@@ -35,12 +34,35 @@ public class FileDlTask implements Runnable{
 
     private Map<String,byte[]> data=new LinkedHashMap<>();
 
+    public FileDlTask(ComicService comicService,RedisService redisService, ChapterService chapterService) {
+        this.redisService = redisService;
+        this.chapterService = chapterService;
+    }
+
     @Override
     public void run() {
-        String comicId=baseUrl.substring(baseUrl.length()-15,baseUrl.length()-11);
-        String chapterId=baseUrl.substring(baseUrl.length()-10,baseUrl.length()-7);
+        String url;
+        Chapter chapter;
+        while (true){
+            synchronized (this){
+                url=redisService.randomKey();
+                if (url==null){
+                    break;
+                }
+                chapter=(Chapter) redisService.get(url);
+                redisService.delete(url);
+            }
+            download(url, chapter,proxies.get((int)(Math.random()*proxies.size())));
+        }
+
+    }
+
+    private void download(String url, Chapter chapter, Proxy proxy){
+        String path= GlobalConfig.ROOT_PATH+comicService.findById(chapter.getComicId()).getComicName();
+        String comicId=url.substring(url.length()-15,url.length()-11);
+        String chapterId=url.substring(url.length()-10,url.length()-7);
         String requestUrl="https://www.cartoonmad.com/comic/comicpic.asp?file=/"+comicId+"/"+chapterId+"/";
-        String refererUrl=baseUrl.substring(0,baseUrl.length()-3);
+        String refererUrl=url.substring(0,url.length()-3);
         String num;
         for (int i=1;i<chapter.getPageNum()+1;i++){
             num=String.format("%03d", i);
@@ -65,10 +87,11 @@ public class FileDlTask implements Runnable{
             Chapter newChapter=chapterService.findById(chapter.getChapterId());
             newChapter.setDownloaded(DownloadedEnum.DOWNLOADED.getCode());
             chapterService.saveOrUpdate(newChapter);
-            redisService.delete(baseUrl);
-            IOUtil.zipFileOutput(basePath+chapter.getChapterName(), data);
+            IOUtil.zipFileOutput(path+chapter.getChapterName(), data);
         }
-
+        else {
+            redisService.set(url, chapter);
+        }
     }
 
 }

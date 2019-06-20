@@ -42,8 +42,7 @@ public class ProxyServiceImpl implements ProxyService {
     }
 
     @Override
-    public Page<Proxy> findAllByCreateTimeIn(int page, int size) {
-        Pageable pageable=PageRequest.of(page, size);
-        return proxyRepository.findAll(pageable);
+    public List<Proxy> findAll() {
+        return proxyRepository.findAll();
     }
 }

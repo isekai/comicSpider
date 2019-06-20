@@ -34,12 +34,20 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
+    public boolean hasKey(String key) {
+        return redisTemplate.hasKey(key);
+    }
+
+    @Override
+    public String randomKey() {
+        return redisTemplate.randomKey();
+    }
+
+
+    @Override
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
     }
 
-    @Override
-    public List<Object> multiGet(Collection<String> keys) {
-        return redisTemplate.opsForValue().multiGet(keys);
-    }
+
 }

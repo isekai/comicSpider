@@ -12,6 +12,6 @@ import java.util.List;
  **/
 public interface ProxyService extends CurdService<Proxy> {
     Proxy findByIp(String ip);
-    Page<Proxy> findAllByCreateTimeIn(int page, int size);
+    List<Proxy> findAll();
 }
 

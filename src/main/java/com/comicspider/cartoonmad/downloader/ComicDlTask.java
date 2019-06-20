@@ -1,6 +1,7 @@
 package com.comicspider.cartoonmad.downloader;
 
 import com.comicspider.cartoonmad.dto.Cartoonmad;
+import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.*;
 import com.comicspider.enums.DownloadedEnum;
 import com.comicspider.enums.EndEnum;
@@ -27,7 +28,7 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ComicDlTask implements Runnable {
     @Setter
-    private List<Integer> comicIdList;
+    private int[] comicIds;
     @Setter
     private Proxy proxy;
     @Setter
@@ -51,13 +52,13 @@ public class ComicDlTask implements Runnable {
 
     @Override
     public void run() {
-        for (Integer comicId : comicIdList) {
+        for (int comicId : comicIds) {
             try {
                 getComic(comicId, proxy);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (SpiderException e) {
-                Comic comic=new Comic();
+                Comic comic = new Comic();
                 comic.setComicId(comicId);
                 comicService.saveOrUpdate(comic);
             }
@@ -66,7 +67,7 @@ public class ComicDlTask implements Runnable {
     }
 
     private void getComic(int comicId, Proxy proxy) throws UnsupportedEncodingException {
-        String comicUrl="https://www.cartoonmad.com/comic/"+comicId+".html";
+        String comicUrl= GlobalConfig.CARTOONMAD_BASE_URL +comicId+".html";
         String html=new String(HttpUtil.get(comicUrl, proxy),"Big5");
         Cartoonmad cartoonmad= getCartoonmad(html);
         Comic comic=cartoonmad.getComic();
@@ -156,7 +157,7 @@ public class ComicDlTask implements Runnable {
             chapter.setChapterType(chapterType);
             chapter.setChapterName(chapterName);
             chapter.setPageNum(pageNum);
-            chapters.put("https://www.cartoonmad.com/comic/"+pageUrl,chapter);
+            chapters.put(GlobalConfig.CARTOONMAD_BASE_URL+pageUrl,chapter);
         }
         comic.setChapterNum(chapters.size());
         return new Cartoonmad(comic,tags,chapters);

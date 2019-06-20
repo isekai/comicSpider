@@ -33,7 +33,7 @@ public class ProxyDlTask implements Runnable {
         String html=new String(HttpUtil.get(url));
         List<Proxy> proxies= getProxy(html);
         for (Proxy proxy : proxies){
-            if (proxyService.findByIp(proxy.getIp())==null && HttpUtil.get(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
+            if (HttpUtil.get(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
                 proxyService.saveOrUpdate(proxy);
             }
         }

@@ -10,6 +10,13 @@ import org.springframework.context.annotation.Configuration;
  **/
 @Configuration
 public class GlobalConfig {
+    public static int START_ID;
+
+    @Value("${comciSpider.start_id}")
+    public static void setStartId(int startId) {
+        START_ID = startId;
+    }
+
     public static int POOL_SIZE;
 
     @Value("${comciSpider.pool-size}")
@@ -31,11 +38,11 @@ public class GlobalConfig {
         ROOT_PATH=rootPath;
     }
 
-    public static String CARTOONMAD_URL;
+    public static String CARTOONMAD_BASE_URL;
 
-    @Value("${comicSpider.cartoonmad-url}")
+    @Value("${comicSpider.cartoonmad.base_url}")
     public void setCartoonmadUrl(String cartoonmadUrl){
-        CARTOONMAD_URL=cartoonmadUrl;
+        CARTOONMAD_BASE_URL =cartoonmadUrl;
     }
 
     public static String PROXY_TEST_URL;
