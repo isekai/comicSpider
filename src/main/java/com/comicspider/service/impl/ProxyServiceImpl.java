@@ -37,6 +37,11 @@ public class ProxyServiceImpl implements ProxyService {
     }
 
     @Override
+    public void deleteAll() {
+        proxyRepository.deleteAll();
+    }
+
+    @Override
     public Proxy findByIp(String ip) {
         return proxyRepository.findByIp(ip);
     }

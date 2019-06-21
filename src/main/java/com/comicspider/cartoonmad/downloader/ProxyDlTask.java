@@ -2,10 +2,12 @@ package com.comicspider.cartoonmad.downloader;
 
 import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Proxy;
+import com.comicspider.exception.SpiderException;
 import com.comicspider.service.ProxyService;
 import com.comicspider.service.RedisService;
 import com.comicspider.utils.HttpUtil;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
@@ -18,6 +20,7 @@ import java.util.List;
  * @Author doctor
  * @Date 19-6-3
  **/
+@Slf4j
 public class ProxyDlTask implements Runnable {
     @Setter
     private String url;
@@ -30,13 +33,26 @@ public class ProxyDlTask implements Runnable {
 
     @Override
     public void run() {
-        String html=new String(HttpUtil.get(url));
-        List<Proxy> proxies= getProxy(html);
-        for (Proxy proxy : proxies){
-            if (HttpUtil.get(GlobalConfig.PROXY_TEST_URL, proxy).length!=0){
-                proxyService.saveOrUpdate(proxy);
+        proxyService.deleteAll();
+        String html="";
+        try {
+            html=new String(HttpUtil.get(url));
+            List<Proxy> proxies= getProxy(html);
+            for (Proxy proxy : proxies){
+                if (proxyService.findByIp(proxy.getIp())==null){
+                    try {
+                         HttpUtil.get(GlobalConfig.PROXY_TEST_URL, proxy);
+                         proxyService.saveOrUpdate(proxy);
+                    }
+                    catch (SpiderException e){
+                        log.info("获取代理ip"+proxy.getIp()+"失败");
+                    }
+                }
             }
+        } catch (SpiderException e){
+            log.info("爬取代理失败："+e.getMsg());
         }
+
     }
 
     private List<Proxy> getProxy(String html){

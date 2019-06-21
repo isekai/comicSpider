@@ -1,6 +1,7 @@
 package com.comicspider.utils;
 
 import com.comicspider.config.GlobalConfig;
+import com.comicspider.entity.Proxy;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
 import org.junit.Test;
@@ -18,6 +19,13 @@ import java.util.Map;
 @SpringBootTest
 @Slf4j
 public class UtilsTest {
+
+    @Test
+    public void getComic(){
+        Proxy proxy=new Proxy("106.14.160.134",80,"http");
+        byte[] comic=HttpUtil.get("https://www.cartoonmad.com/comic/1024.html",proxy);
+        Assert.assertNotNull(comic);
+    }
 
     @Test
     public void getCover(){

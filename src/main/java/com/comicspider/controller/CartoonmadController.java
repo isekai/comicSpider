@@ -3,19 +3,15 @@ package com.comicspider.controller;
 import com.comicspider.cartoonmad.downloader.ComicDlTask;
 import com.comicspider.cartoonmad.downloader.FileDlTask;
 import com.comicspider.config.GlobalConfig;
-import com.comicspider.entity.Chapter;
 import com.comicspider.entity.Proxy;
 import com.comicspider.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.*;
 
 /**
@@ -43,18 +39,20 @@ public class CartoonmadController {
     public DeferredResult start(){
         DeferredResult result=new DeferredResult();
         int startId=GlobalConfig.START_ID;
-        int downloadNum=1;
+        int downloadNum=10;
         List<Proxy> proxies=proxyService.findAll();
-        ComicDlTask comicDlTask=new ComicDlTask(comicService,chapterService,tagService,comicTagService,redisService);
         ExecutorService executorService=new ThreadPoolExecutor(GlobalConfig.POOL_SIZE, GlobalConfig.POOL_SIZE+3, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100));
         for (int i=0;i<GlobalConfig.POOL_SIZE;i++){
             int[] comicIds=new int[downloadNum];
             for (int j=0;j<downloadNum;j++){
-                comicIds[j]=startId+i;
+                comicIds[j]=startId+j;
             }
+            ComicDlTask comicDlTask=new ComicDlTask(comicService,chapterService,tagService,comicTagService,redisService);
             comicDlTask.setComicIds(comicIds);
+            comicDlTask.setTaskId("线程---"+i);
             comicDlTask.setProxy(proxies .get((int)(Math.random()*proxies.size())));
             executorService.execute(comicDlTask);
+            startId=startId+downloadNum;
         }
         executorService.shutdown();
         return result;

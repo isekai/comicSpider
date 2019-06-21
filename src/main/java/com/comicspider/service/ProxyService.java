@@ -11,6 +11,7 @@ import java.util.List;
  * @Date 19-5-8
  **/
 public interface ProxyService extends CurdService<Proxy> {
+    void deleteAll();
     Proxy findByIp(String ip);
     List<Proxy> findAll();
 }

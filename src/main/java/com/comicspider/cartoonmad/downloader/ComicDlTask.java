@@ -5,6 +5,7 @@ import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.*;
 import com.comicspider.enums.DownloadedEnum;
 import com.comicspider.enums.EndEnum;
+import com.comicspider.enums.ExceptionEnum;
 import com.comicspider.exception.SpiderException;
 import com.comicspider.service.*;
 import com.comicspider.utils.HttpUtil;
@@ -27,6 +28,8 @@ import java.util.regex.Pattern;
  **/
 @Slf4j
 public class ComicDlTask implements Runnable {
+    @Setter
+    private String taskId;
     @Setter
     private int[] comicIds;
     @Setter
@@ -58,17 +61,24 @@ public class ComicDlTask implements Runnable {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (SpiderException e) {
-                Comic comic = new Comic();
-                comic.setComicId(comicId);
-                comicService.saveOrUpdate(comic);
+                log.info("下载漫画失败！ "+e.getMsg());
             }
         }
+        log.info(taskId+"完成");
 
     }
 
     private void getComic(int comicId, Proxy proxy) throws UnsupportedEncodingException {
         String comicUrl= GlobalConfig.CARTOONMAD_BASE_URL +comicId+".html";
-        String html=new String(HttpUtil.get(comicUrl, proxy),"Big5");
+        String html="";
+        try {
+            html=new String(HttpUtil.get(comicUrl, proxy),"Big5-HKSCS");
+        } catch (SpiderException e){
+            Comic comic = new Comic();
+            comic.setComicId(comicId);
+            comicService.saveOrUpdate(comic);
+            throw  new SpiderException(ExceptionEnum.CONNECT_TIMEOUT);
+        }
         Cartoonmad cartoonmad= getCartoonmad(html);
         Comic comic=cartoonmad.getComic();
         List<Tag> tags=cartoonmad.getTags();

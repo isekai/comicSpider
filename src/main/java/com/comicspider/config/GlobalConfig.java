@@ -12,14 +12,14 @@ import org.springframework.context.annotation.Configuration;
 public class GlobalConfig {
     public static int START_ID;
 
-    @Value("${comciSpider.start_id}")
-    public static void setStartId(int startId) {
+    @Value("${comicSpider.cartoonmad.start-id}")
+    public void setStartId(int startId) {
         START_ID = startId;
     }
 
     public static int POOL_SIZE;
 
-    @Value("${comciSpider.pool-size}")
+    @Value("${comicSpider.pool-size}")
     public void setPoolSize(int poolSize){
         POOL_SIZE=poolSize;
     }
@@ -40,7 +40,7 @@ public class GlobalConfig {
 
     public static String CARTOONMAD_BASE_URL;
 
-    @Value("${comicSpider.cartoonmad.base_url}")
+    @Value("${comicSpider.cartoonmad.base-url}")
     public void setCartoonmadUrl(String cartoonmadUrl){
         CARTOONMAD_BASE_URL =cartoonmadUrl;
     }
