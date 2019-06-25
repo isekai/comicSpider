@@ -35,13 +35,13 @@ public class FileDlTask implements Runnable{
     private Map<String,byte[]> data=new LinkedHashMap<>();
 
     public FileDlTask(ComicService comicService,RedisService redisService, ChapterService chapterService) {
+        this.comicService=comicService;
         this.redisService = redisService;
         this.chapterService = chapterService;
     }
 
     @Override
     public void run() {
-        log.info("任务开始！");
         String url;
         Chapter chapter;
         while (true){
@@ -54,16 +54,14 @@ public class FileDlTask implements Runnable{
                 chapter=(Chapter) redisService.get(url);
                 redisService.delete(url);
             }
-            log.info("开始下载");
             download(url, chapter,proxies.get((int)(Math.random()*proxies.size())));
         }
 
     }
 
     private void download(String url, Chapter chapter, Proxy proxy){
-        log.info("进入下载！");
+        log.info("开始下载漫画章节！");
         String path= GlobalConfig.ROOT_PATH+comicService.findById(chapter.getComicId()).getComicName();
-        log.info("下载途中！"+path);
         String comicId=url.substring(url.length()-15,url.length()-11);
         String chapterId=url.substring(url.length()-10,url.length()-7);
         String requestUrl="https://www.cartoonmad.com/comic/comicpic.asp?file=/"+comicId+"/"+chapterId+"/";

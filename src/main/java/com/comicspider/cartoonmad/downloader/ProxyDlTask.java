@@ -4,7 +4,6 @@ import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Proxy;
 import com.comicspider.exception.SpiderException;
 import com.comicspider.service.ProxyService;
-import com.comicspider.service.RedisService;
 import com.comicspider.utils.HttpUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,10 +32,8 @@ public class ProxyDlTask implements Runnable {
 
     @Override
     public void run() {
-        proxyService.deleteAll();
-        String html="";
         try {
-            html=new String(HttpUtil.get(url));
+            String html=new String(HttpUtil.get(url));
             List<Proxy> proxies= getProxy(html);
             for (Proxy proxy : proxies){
                 if (proxyService.findByIp(proxy.getIp())==null){
@@ -46,6 +43,7 @@ public class ProxyDlTask implements Runnable {
                     }
                     catch (SpiderException e){
                         log.info("获取代理ip"+proxy.getIp()+"失败");
+                        log.info(e.getMsg());
                     }
                 }
             }

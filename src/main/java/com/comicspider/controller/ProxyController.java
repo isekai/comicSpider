@@ -30,6 +30,5 @@ public class ProxyController {
         ScheduledThreadPoolExecutor executorService = new ScheduledThreadPoolExecutor(1);
         executorService.scheduleAtFixedRate(proxyDlTask, 0, 1, TimeUnit.DAYS);
         return deferredResult;
-
     }
 }

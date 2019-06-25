@@ -29,8 +29,6 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ComicDlTask implements Runnable {
     @Setter
-    private String taskId;
-    @Setter
     private int[] comicIds;
     @Setter
     private Proxy proxy;
@@ -64,19 +62,15 @@ public class ComicDlTask implements Runnable {
                 log.info("下载漫画失败！ "+e.getMsg());
             }
         }
-        log.info(taskId+"完成");
-
     }
 
     private void getComic(int comicId, Proxy proxy) throws UnsupportedEncodingException {
+        log.info("开始下载漫画！");
         String comicUrl= GlobalConfig.CARTOONMAD_BASE_URL +comicId+".html";
-        String html="";
-        try {
-            html=new String(HttpUtil.get(comicUrl, proxy),"Big5-HKSCS");
-        } catch (SpiderException e){
+        String html=new String(HttpUtil.get(comicUrl, proxy),"Big5-HKSCS");
+        if ("".equals(html)){
             Comic comic = new Comic();
             comic.setComicId(comicId);
-            comicService.saveOrUpdate(comic);
             throw  new SpiderException(ExceptionEnum.CONNECT_TIMEOUT);
         }
         Cartoonmad cartoonmad= getCartoonmad(html);
@@ -110,7 +104,6 @@ public class ComicDlTask implements Runnable {
         Comic comic=new Comic();
         List<Tag> tags=new LinkedList<>();
         Map<String,Chapter> chapters=new LinkedHashMap<>();
-
         Document doc= Jsoup.parse(html);
         Element title=doc.getElementsByTag("title").first();
         String comicName= HanLP.convertToSimplifiedChinese(title.text().split("\\s")[0]);
@@ -135,7 +128,7 @@ public class ComicDlTask implements Runnable {
         Pattern pattern2=Pattern.compile("/image/chap([a-zA-Z0-9]{1})");
         matcher=pattern2.matcher(html);
         if (matcher.find()){
-            if (matcher.group(1).equals("1")){
+            if ("1".equals(matcher.group(1))){
                 comic.setEnd(EndEnum.END.getCode());
             }
             else {

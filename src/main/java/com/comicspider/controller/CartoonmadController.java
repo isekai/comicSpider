@@ -49,7 +49,6 @@ public class CartoonmadController {
             }
             ComicDlTask comicDlTask=new ComicDlTask(comicService,chapterService,tagService,comicTagService,redisService);
             comicDlTask.setComicIds(comicIds);
-            comicDlTask.setTaskId("线程---"+i);
             comicDlTask.setProxy(proxies .get((int)(Math.random()*proxies.size())));
             executorService.execute(comicDlTask);
             startId=startId+downloadNum;
@@ -62,12 +61,9 @@ public class CartoonmadController {
     public DeferredResult zipIoTest(){
         DeferredResult result=new DeferredResult();
         FileDlTask fileDlTask=new FileDlTask(comicService,redisService,chapterService);
+        ExecutorService executorService=new ThreadPoolExecutor(GlobalConfig.POOL_SIZE, GlobalConfig.POOL_SIZE+3, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(100));
         fileDlTask.setProxies(proxyService.findAll());
-        ScheduledThreadPoolExecutor executorService = new ScheduledThreadPoolExecutor(GlobalConfig.POOL_SIZE);
-        for (int i=0;i<GlobalConfig.POOL_SIZE;i++){
-            executorService.execute(fileDlTask);
-        }
-        executorService.scheduleAtFixedRate(fileDlTask, 0, 1, TimeUnit.HOURS);
+        executorService.execute(fileDlTask);
         executorService.shutdown();
         return result;
     }
