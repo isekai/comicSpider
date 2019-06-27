@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author doctor
@@ -26,6 +25,11 @@ public class ChapterServiceImpl implements ChapterService {
     }
 
     @Override
+    public List<Chapter> findAllByComicId(int comicId) {
+        return chapterRepository.findAllByComicId(comicId);
+    }
+
+/*    @Override
     public List<Chapter> findAllDownloaded(int comicId) {
         return chapterRepository.findAllByComicIdAndDownloaded(comicId,DownloadedEnum.DOWNLOADED.getCode());
     }
@@ -33,7 +37,7 @@ public class ChapterServiceImpl implements ChapterService {
     @Override
     public List<Chapter> findAllNotDownloaded(int comicId) {
         return chapterRepository.findAllByComicIdAndDownloaded(comicId,DownloadedEnum.UN_DOWNLOADED.getCode());
-    }
+    }*/
 
     @Override
     public Chapter findById(int id) {

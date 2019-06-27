@@ -11,6 +11,5 @@ import java.util.Map;
  **/
 public interface ChapterService extends CurdService<Chapter> {
     Chapter findByChapterName(String chapterName);
-    List<Chapter> findAllDownloaded(int comicId);
-    List<Chapter> findAllNotDownloaded(int comicId);
+    List<Chapter> findAllByComicId(int comicId);
 }

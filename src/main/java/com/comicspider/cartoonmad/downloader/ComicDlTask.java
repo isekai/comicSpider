@@ -43,6 +43,10 @@ public class ComicDlTask implements Runnable {
     @Setter
     private RedisService redisService;
 
+    private static Pattern pattern1=Pattern.compile("/cartoonimgs/coimg/[a-zA-Z0-9]{1,10}.[a-zA-Z0-9]{1,5}");
+    private static Pattern pattern2=Pattern.compile("/image/chap([a-zA-Z0-9]{1})");
+    private static Pattern pattern3=Pattern.compile("/comic/[a-zA-Z0-9]{10,30}");
+
     public ComicDlTask(ComicService comicService, ChapterService chapterService, TagService tagService, ComicTagService comicTagService, RedisService redisService) {
         this.comicService = comicService;
         this.chapterService = chapterService;
@@ -59,20 +63,18 @@ public class ComicDlTask implements Runnable {
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (SpiderException e) {
+                log.info(comicId+"-----------------"+proxy.getIp()+"--"+proxy.getType());
+                Comic comic = new Comic();
+                comic.setComicId(comicId);
                 log.info("下载漫画失败！ "+e.getMsg());
             }
         }
     }
 
-    private void getComic(int comicId, Proxy proxy) throws UnsupportedEncodingException {
+    private void getComic(int comicId, Proxy proxy) throws SpiderException, UnsupportedEncodingException {
         log.info("开始下载漫画！");
         String comicUrl= GlobalConfig.CARTOONMAD_BASE_URL +comicId+".html";
         String html=new String(HttpUtil.get(comicUrl, proxy),"Big5-HKSCS");
-        if ("".equals(html)){
-            Comic comic = new Comic();
-            comic.setComicId(comicId);
-            throw  new SpiderException(ExceptionEnum.CONNECT_TIMEOUT);
-        }
         Cartoonmad cartoonmad= getCartoonmad(html);
         Comic comic=cartoonmad.getComic();
         List<Tag> tags=cartoonmad.getTags();
@@ -120,12 +122,10 @@ public class ComicDlTask implements Runnable {
         Element tdStyle=doc.selectFirst("table[width=800] td[style=\"font-size:11pt;\"]");
         String about=HanLP.convertToSimplifiedChinese(tdStyle.text().replace("<(\"[^\"]*\"|'[^']*'|[^'\">])*>", ""));
         comic.setAbout(about);
-        Pattern pattern1=Pattern.compile("/cartoonimgs/coimg/[a-zA-Z0-9]{1,10}.[a-zA-Z0-9]{1,5}");
         Matcher matcher=pattern1.matcher(html);
         if (matcher.find()){
             comic.setCover("https://www.cartoonmad.com"+matcher.group());
         }
-        Pattern pattern2=Pattern.compile("/image/chap([a-zA-Z0-9]{1})");
         matcher=pattern2.matcher(html);
         if (matcher.find()){
             if ("1".equals(matcher.group(1))){
@@ -141,7 +141,6 @@ public class ComicDlTask implements Runnable {
             tags.add(new Tag(HanLP.convertToSimplifiedChinese(tagName)));
         }
 
-        Pattern pattern3=Pattern.compile("/comic/[a-zA-Z0-9]{10,30}");
         matcher=pattern3.matcher(html);
         while (matcher.find()){
             String pageUrl=matcher.group().replace("/comic/", "");

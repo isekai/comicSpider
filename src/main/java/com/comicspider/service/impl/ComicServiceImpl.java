@@ -3,10 +3,15 @@ package com.comicspider.service.impl;
 import com.comicspider.dao.ComicRepository;
 import com.comicspider.entity.Comic;
 import com.comicspider.enums.DownloadedEnum;
+import com.comicspider.enums.EndEnum;
 import com.comicspider.service.ComicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -34,6 +39,16 @@ public class ComicServiceImpl implements ComicService {
         return comicRepository.findAllByDownloaded(DownloadedEnum.UN_DOWNLOADED.getCode());
     }
 
+    @Override
+    public List<Comic> findAllEnded() {
+        return comicRepository.findAllByEnd(EndEnum.END.getCode());
+    }
+
+    @Override
+    public List<Comic> findAllNotEnded() {
+        return comicRepository.findAllByEnd(EndEnum.UN_END.getCode());
+    }
+
 
     @Override
     public List<Comic> findAllByCategory(String category) {
@@ -43,6 +58,12 @@ public class ComicServiceImpl implements ComicService {
     @Override
     public List<Comic> findAllByAuthor(String author) {
         return comicRepository.findAllByAuthor(author);
+    }
+
+    @Override
+    public List<Comic> findAllByPage(int pageNum, int pageSize) {
+        Pageable pageable= PageRequest.of(pageNum, pageSize,new Sort(Sort.Direction.DESC,"updateTime"));
+        return comicRepository.findAll(pageable).getContent();
     }
 
     @Override

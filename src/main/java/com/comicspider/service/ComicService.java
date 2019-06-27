@@ -13,9 +13,16 @@ public interface ComicService extends CurdService<Comic> {
     Comic findByComicName(String comicName);
 
     List<Comic> findAllDownloaded();
+
     List<Comic> findAllNotDownloaded();
+
+    List<Comic> findAllEnded();
+
+    List<Comic> findAllNotEnded();
 
     List<Comic> findAllByCategory(String category);
 
     List<Comic> findAllByAuthor(String author);
+
+    List<Comic> findAllByPage(int pageNum,int pageSize);
 }

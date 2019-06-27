@@ -21,7 +21,7 @@ public class ProxyController {
     @Autowired
     private ProxyService proxyService;
 
-    @RequestMapping("/proxySpider")
+    @RequestMapping("/start")
     public DeferredResult proxySpider(){
         DeferredResult deferredResult = new DeferredResult();
         ProxyDlTask proxyDlTask;

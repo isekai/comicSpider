@@ -6,6 +6,8 @@ import com.comicspider.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @Author doctor
  * @Date 19-5-8
@@ -33,5 +35,10 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag findByTagName(String tagName) {
         return tagRepository.findByTagName(tagName);
+    }
+
+    @Override
+    public List<Tag> findAll() {
+        return tagRepository.findAll();
     }
 }

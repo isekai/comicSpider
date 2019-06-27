@@ -18,7 +18,7 @@ public class ComicTag {
      * 漫画标签关系id
      */
     @Id
-    private int comicTagID;
+    private int comicTagId;
 
     /**
      * 漫画id

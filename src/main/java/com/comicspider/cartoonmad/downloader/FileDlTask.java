@@ -61,7 +61,7 @@ public class FileDlTask implements Runnable{
 
     private void download(String url, Chapter chapter, Proxy proxy){
         log.info("开始下载漫画章节！");
-        String path= GlobalConfig.ROOT_PATH+comicService.findById(chapter.getComicId()).getComicName();
+        String path= GlobalConfig.ROOT_PATH+chapter.getComicId();
         String comicId=url.substring(url.length()-15,url.length()-11);
         String chapterId=url.substring(url.length()-10,url.length()-7);
         String requestUrl="https://www.cartoonmad.com/comic/comicpic.asp?file=/"+comicId+"/"+chapterId+"/";
@@ -90,7 +90,7 @@ public class FileDlTask implements Runnable{
             Chapter newChapter=chapterService.findById(chapter.getChapterId());
             newChapter.setDownloaded(DownloadedEnum.DOWNLOADED.getCode());
             chapterService.saveOrUpdate(newChapter);
-            IOUtil.zipFileOutput(path+chapter.getChapterName(), data);
+            IOUtil.zipFileOutput(path+chapter.getChapterId(), data);
         }
         else {
             redisService.set(url, chapter);
