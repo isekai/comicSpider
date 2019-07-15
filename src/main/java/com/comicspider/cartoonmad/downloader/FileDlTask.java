@@ -4,18 +4,14 @@ import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Chapter;
 import com.comicspider.entity.Proxy;
 import com.comicspider.enums.DownloadedEnum;
-import com.comicspider.exception.SpiderException;
 import com.comicspider.service.ChapterService;
-import com.comicspider.service.ComicService;
 import com.comicspider.service.RedisService;
 import com.comicspider.utils.HttpUtil;
 import com.comicspider.utils.IOUtil;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Author doctor
@@ -26,16 +22,14 @@ public class FileDlTask implements Runnable{
     @Setter
     private List<Proxy> proxies;
     @Setter
-    private ComicService comicService;
-    @Setter
     private RedisService redisService;
     @Setter
     private ChapterService chapterService;
 
-    private Map<String,byte[]> data=new LinkedHashMap<>();
+//    private Map<String,byte[]> data=new LinkedHashMap<>();
+    private List<String> data=new ArrayList<>();
 
-    public FileDlTask(ComicService comicService,RedisService redisService, ChapterService chapterService) {
-        this.comicService=comicService;
+    public FileDlTask(RedisService redisService, ChapterService chapterService) {
         this.redisService = redisService;
         this.chapterService = chapterService;
     }
@@ -45,34 +39,40 @@ public class FileDlTask implements Runnable{
         String url;
         Chapter chapter;
         while (true){
-            synchronized (this){
+            synchronized (FileDlTask.class){
                 url=redisService.randomKey();
-                log.info("获取key！"+url);
                 if (url==null){
                     break;
                 }
                 chapter=(Chapter) redisService.get(url);
                 redisService.delete(url);
             }
-            download(url, chapter,proxies.get((int)(Math.random()*proxies.size())));
+            Proxy proxy=null;
+            if (proxies.size()>0){
+                proxy=proxies.get((int)(Math.random()*proxies.size()));
+            }
+            download(url, chapter,proxy);
         }
 
     }
 
-    private void download(String url, Chapter chapter, Proxy proxy){
+    private void download(String url, Chapter chapter,Proxy proxy){
         log.info("开始下载漫画章节！");
-        String path= GlobalConfig.ROOT_PATH+chapter.getComicId();
+        int failNum=0;
+/*        String path= GlobalConfig.ROOT_PATH+"/"+chapter.getComicId();*/
         String comicId=url.substring(url.length()-15,url.length()-11);
         String chapterId=url.substring(url.length()-10,url.length()-7);
         String requestUrl="https://www.cartoonmad.com/comic/comicpic.asp?file=/"+comicId+"/"+chapterId+"/";
         String refererUrl=url.substring(0,url.length()-3);
         String num;
-        for (int i=1;i<chapter.getPageNum()+1;i++){
+/*        for (int i=1;i<chapter.getPageNum()+1;i++){
             num=String.format("%03d", i);
             log.info("正在下载第"+num+"页...");
+            Map<String,String> headers=new HashMap<>();
+            headers.put("Referer", refererUrl+num);
             for (int j=0;j<3;j++){
                 try {
-                    byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,refererUrl+num);
+                    byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
                     if (fileByte.length>0){
                         data.put(num+".jpg", fileByte);
                         break;
@@ -90,10 +90,49 @@ public class FileDlTask implements Runnable{
             Chapter newChapter=chapterService.findById(chapter.getChapterId());
             newChapter.setDownloaded(DownloadedEnum.DOWNLOADED.getCode());
             chapterService.saveOrUpdate(newChapter);
-            IOUtil.zipFileOutput(path+chapter.getChapterId(), data);
+            IOUtil.zipFileOutput(path+"/"+chapter.getChapterId(), data);
         }
         else {
             redisService.set(url, chapter);
+        }*/
+        for (int i=1;i<chapter.getPageNum()+1;i++){
+            num=String.format("%03d", i);
+            String path=GlobalConfig.ROOT_PATH+"/"+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
+            Map<String,String> headers=new HashMap<>();
+            headers.put("Referer", refererUrl+num);
+            byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
+            if (fileByte.length>0){
+                log.info("正在下载第"+num+"页...");
+                IOUtil.writeFile(path, fileByte);
+            }
+            else {
+                data.add(num);
+                log.info("下载图片"+num+"失败！");
+            }
+        }
+        while (data.size()>0){
+            num=data.get(0);
+            String path=GlobalConfig.ROOT_PATH+"/"+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
+            Map<String,String> headers=new HashMap<>();
+            headers.put("Referer", refererUrl+num);
+            byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
+            if (fileByte.length>0){
+                data.remove(num);
+                IOUtil.writeFile(path, fileByte);
+            }else {
+                log.info("下载图片"+num+"失败！正在重试！");
+                failNum++;
+            }
+            if (failNum>10){
+                log.info("章节下载失败！");
+                redisService.set(url,chapter);
+                break;
+            }
+        }
+        if (data.size()==0){
+            Chapter newChapter=chapterService.findById(chapter.getChapterId());
+            newChapter.setDownloaded(DownloadedEnum.DOWNLOADED.getCode());
+            chapterService.saveOrUpdate(newChapter);
         }
     }
 

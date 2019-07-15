@@ -17,6 +17,13 @@ public class GlobalConfig {
         START_ID = startId;
     }
 
+    public static int DOWNLOAD_NUM;
+
+    @Value("${comicSpider.cartoonmad.download-num}")
+    public void setDownloadNum(int downloadNum){
+        DOWNLOAD_NUM=downloadNum;
+    }
+
     public static int POOL_SIZE;
 
     @Value("${comicSpider.pool-size}")

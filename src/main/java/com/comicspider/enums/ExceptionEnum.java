@@ -8,6 +8,9 @@ import lombok.Getter;
  **/
 
 public enum  ExceptionEnum {
+    /**
+     * 可能产生的异常枚举
+    **/
     NOT_DOWNLOAD(9999,"下载失败"),
     CONNECT_TIMEOUT(500,"连接超时");
 

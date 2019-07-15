@@ -10,8 +10,8 @@ CREATE TABLE `comicspider_comic`
   `category` varchar(30) COMMENT '分类',
   `author` varchar(60) COMMENT '作者',
   `about` text COMMENT '关于',
-  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime NOT NULL default CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`comic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

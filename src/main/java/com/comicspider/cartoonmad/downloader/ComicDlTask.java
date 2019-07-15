@@ -31,7 +31,7 @@ public class ComicDlTask implements Runnable {
     @Setter
     private int[] comicIds;
     @Setter
-    private Proxy proxy;
+    private List<Proxy> proxies;
     @Setter
     private ComicService comicService;
     @Setter
@@ -44,7 +44,7 @@ public class ComicDlTask implements Runnable {
     private RedisService redisService;
 
     private static Pattern pattern1=Pattern.compile("/cartoonimgs/coimg/[a-zA-Z0-9]{1,10}.[a-zA-Z0-9]{1,5}");
-    private static Pattern pattern2=Pattern.compile("/image/chap([a-zA-Z0-9]{1})");
+    private static Pattern pattern2=Pattern.compile("/image/chap([a-zA-Z0-9])");
     private static Pattern pattern3=Pattern.compile("/comic/[a-zA-Z0-9]{10,30}");
 
     public ComicDlTask(ComicService comicService, ChapterService chapterService, TagService tagService, ComicTagService comicTagService, RedisService redisService) {
@@ -58,12 +58,15 @@ public class ComicDlTask implements Runnable {
     @Override
     public void run() {
         for (int comicId : comicIds) {
+            Proxy proxy=null;
+            if (proxies.size()>0){
+                proxy=proxies.get((int)(Math.random()*proxies.size()));
+            }
             try {
                 getComic(comicId, proxy);
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             } catch (SpiderException e) {
-                log.info(comicId+"-----------------"+proxy.getIp()+"--"+proxy.getType());
                 Comic comic = new Comic();
                 comic.setComicId(comicId);
                 log.info("下载漫画失败！ "+e.getMsg());
@@ -71,10 +74,13 @@ public class ComicDlTask implements Runnable {
         }
     }
 
-    private void getComic(int comicId, Proxy proxy) throws SpiderException, UnsupportedEncodingException {
+    private void getComic(int comicId, Proxy proxy) throws UnsupportedEncodingException {
         log.info("开始下载漫画！");
         String comicUrl= GlobalConfig.CARTOONMAD_BASE_URL +comicId+".html";
         String html=new String(HttpUtil.get(comicUrl, proxy),"Big5-HKSCS");
+        if (html.length()==0){
+            throw new SpiderException(ExceptionEnum.CONNECT_TIMEOUT);
+        }
         Cartoonmad cartoonmad= getCartoonmad(html);
         Comic comic=cartoonmad.getComic();
         List<Tag> tags=cartoonmad.getTags();

@@ -29,6 +29,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
+import java.util.Map;
 
 @Slf4j
 public class HttpUtil {
@@ -72,7 +73,7 @@ public class HttpUtil {
         return HttpClients.custom().setConnectionManager(cm).build();
     }
 
-    public static byte[] getByte(String requestUrl, Proxy proxy, Header header){
+    public static byte[] getByte(String requestUrl, Proxy proxy, Header[] headers){
         HttpHost host=null;
         if (proxy!=null){
             host=new HttpHost(proxy.getIp(),proxy.getPort(),proxy.getType());
@@ -86,10 +87,7 @@ public class HttpUtil {
         try {
             HttpGet httpGet=new HttpGet(requestUrl);
             httpGet.setConfig(requestConfig);
-            httpGet.setHeader("User-Agent",GlobalConfig.USER_AGENT);
-            if (header!=null){
-                httpGet.setHeader(header);
-            }
+            httpGet.setHeaders(headers);
             CloseableHttpResponse response= httpClient.execute(httpGet);
             if (response.getStatusLine().getStatusCode()==200){
                 return EntityUtils.toByteArray(response.getEntity());
@@ -102,16 +100,24 @@ public class HttpUtil {
     }
 
     public static byte[] get(String requestUrl){
-        return getByte(requestUrl, null, null);
+        Header[] headers={new BasicHeader("User-Agent",GlobalConfig.USER_AGENT)};
+        return getByte(requestUrl, null, headers);
     }
 
     public static byte[] get(String requestUrl,Proxy proxy){
-        return getByte(requestUrl, proxy, null);
+        Header[] headers={new BasicHeader("User-Agent",GlobalConfig.USER_AGENT)};
+        return getByte(requestUrl, proxy, headers);
     }
 
-    public static byte[] get(String requestUrl,Proxy proxy,String refererUrl){
-        Header header=new BasicHeader("Referer", refererUrl);
-        return getByte(requestUrl, proxy, header);
+    public static byte[] get(String requestUrl, Proxy proxy, Map<String,String> headerMap){
+        Header[] headers=new Header[headerMap.size()+1];
+        headers[0]=new BasicHeader("User-Agent",GlobalConfig.USER_AGENT);
+        int i=1;
+        for (String key : headerMap.keySet()){
+            headers[i]=new BasicHeader(key, headerMap.get(key));
+            i++;
+        }
+        return getByte(requestUrl, proxy, headers);
     }
 
 

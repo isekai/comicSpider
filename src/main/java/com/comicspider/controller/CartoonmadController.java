@@ -39,19 +39,18 @@ public class CartoonmadController {
     @RequestMapping("/start")
     public DeferredResult start(){
         DeferredResult result=new DeferredResult();
-        List<Proxy> proxies=proxyService.findAll();
         int startId=GlobalConfig.START_ID;
-        int downloadNum=10;
+        int downloadNum=20;
         ThreadFactory namedThreadFactory=new ThreadFactoryBuilder().setNameFormat("cartoonmadSpider-pool-%d").build();
         ExecutorService executorService=new ThreadPoolExecutor(1, GlobalConfig.POOL_SIZE, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024),namedThreadFactory);
-        for (int i=0;i<10;i++){
+        for (int i=0;i<GlobalConfig.POOL_SIZE;i++){
             int[] comicIds=new int[downloadNum];
             for (int j=0;j<downloadNum;j++){
                 comicIds[j]=startId+j;
             }
             ComicDlTask comicDlTask=new ComicDlTask(comicService,chapterService,tagService,comicTagService,redisService);
             comicDlTask.setComicIds(comicIds);
-            comicDlTask.setProxy(proxies .get((int)(Math.random()*proxies.size())));
+            comicDlTask.setProxies(proxyService.findAll());
             executorService.execute(comicDlTask);
             startId=startId+downloadNum;
         }
@@ -60,16 +59,17 @@ public class CartoonmadController {
     }
 
     @RequestMapping("/download")
-    public DeferredResult zipIoTest(){
+    public DeferredResult download(){
         DeferredResult result=new DeferredResult();
-        FileDlTask fileDlTask=new FileDlTask(comicService,redisService,chapterService);
-        ExecutorService executorService=new ThreadPoolExecutor(GlobalConfig.POOL_SIZE, GlobalConfig.POOL_SIZE+3, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024));
-        fileDlTask.setProxies(proxyService.findAll());
-        executorService.execute(fileDlTask);
+        ThreadFactory namedThreadFactory=new ThreadFactoryBuilder().setNameFormat("download-pool-%d").build();
+        ExecutorService executorService=new ThreadPoolExecutor(GlobalConfig.POOL_SIZE, GlobalConfig.POOL_SIZE, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(1024),namedThreadFactory);
+        for (int i=0;i<1;i++){
+            FileDlTask fileDlTask=new FileDlTask(redisService,chapterService);
+            fileDlTask.setProxies(proxyService.findAll());
+            executorService.execute(fileDlTask);
+        }
         executorService.shutdown();
         return result;
     }
-
-
 
 }

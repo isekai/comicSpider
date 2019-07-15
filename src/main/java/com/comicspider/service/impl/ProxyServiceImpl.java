@@ -37,6 +37,11 @@ public class ProxyServiceImpl implements ProxyService {
     }
 
     @Override
+    public void saveAll(List<Proxy> proxies) {
+        proxyRepository.saveAll(proxies);
+    }
+
+    @Override
     public void deleteAll() {
         proxyRepository.deleteAll();
     }

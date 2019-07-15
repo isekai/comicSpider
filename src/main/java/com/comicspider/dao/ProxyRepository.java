@@ -11,6 +11,5 @@ import java.util.List;
  * @Date 19-4-25 下午4:31
  **/
 public interface ProxyRepository extends JpaRepository<Proxy,Integer>  {
-    void deleteAll();
     Proxy findByIp(String ip);
 }

@@ -25,6 +25,7 @@ public class ComicController {
 
     @RequestMapping({"","/"})
     public List<Comic> findByPage(int pageNum,int pageSize){
+        System.out.println(pageNum+"---"+pageSize);
         return comicService.findAllByPage(pageNum, pageSize);
     }
 
