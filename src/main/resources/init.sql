@@ -6,12 +6,12 @@ CREATE TABLE `comicspider_comic`
   `is_end` tinyint NOT NULL DEFAULT 0 COMMENT '是否已完结',
   `chapter_num` int COMMENT '章节数目',
   `comic_name` varchar(300) COMMENT '漫画名',
-  `cover` text COMMENT 'base64封面',
+  `cover` longtext COMMENT 'base64封面',
   `category` varchar(30) COMMENT '分类',
   `author` varchar(60) COMMENT '作者',
   `about` text COMMENT '关于',
-  `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`comic_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -45,7 +45,7 @@ CREATE TABLE `comicspider_tag`
   PRIMARY KEY (`tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `comicspider_comict_tag`;
+DROP TABLE IF EXISTS `comicspider_comic_tag`;
 CREATE TABLE `comicspider_comic_tag`
 (
   `comic_tag_id` int unsigned NOT NULL AUTO_INCREMENT COMMENT '漫画和标签的关系id',

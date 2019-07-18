@@ -80,7 +80,7 @@ public class HttpUtil {
         }
         RequestConfig requestConfig=RequestConfig.custom()
                 .setProxy(host)
-                .setConnectTimeout(10000).setConnectionRequestTimeout(5000)
+                .setConnectTimeout(10000).setConnectionRequestTimeout(10000)
                 .setSocketTimeout(10000)
                 .build();
         CloseableHttpClient httpClient=getHttpClient();

@@ -65,13 +65,13 @@ public class Comic {
     /**
      * 创建时间
      */
-    @Column(insertable = false)
+    @Column(insertable = false,updatable = false)
     private Date createTime;
 
     /**
      * 更新时间
      */
-    @Column(insertable = false)
+    @Column(insertable = false,updatable = false)
     private Date updateTime;
 
     public Comic(){}

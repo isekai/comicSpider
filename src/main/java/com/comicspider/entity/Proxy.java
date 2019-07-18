@@ -39,7 +39,7 @@ public class Proxy {
     /**
      * 创建时间
      */
-    @Column(insertable = false)
+    @Column(insertable = false,updatable = false)
     private Date createTime;
 
     public Proxy(){}

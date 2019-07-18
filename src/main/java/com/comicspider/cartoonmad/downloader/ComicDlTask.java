@@ -69,13 +69,19 @@ public class ComicDlTask implements Runnable {
             } catch (SpiderException e) {
                 Comic comic = new Comic();
                 comic.setComicId(comicId);
-                log.info("下载漫画失败！ "+e.getMsg());
+                comicService.saveOrUpdate(comic);
+                log.info("下载漫画失败！ "+comic+"理由是： "+e.getMsg());
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
 
-    private void getComic(int comicId, Proxy proxy) throws UnsupportedEncodingException {
-        log.info("开始下载漫画！");
+    public void getComic(int comicId, Proxy proxy) throws UnsupportedEncodingException {
+        log.info("开始下载漫画！"+comicId);
         String comicUrl= GlobalConfig.CARTOONMAD_BASE_URL +comicId+".html";
         String html=new String(HttpUtil.get(comicUrl, proxy),"Big5-HKSCS");
         if (html.length()==0){
@@ -108,7 +114,7 @@ public class ComicDlTask implements Runnable {
         }
     }
 
-    private Cartoonmad getCartoonmad(String html){
+    public Cartoonmad getCartoonmad(String html){
         Comic comic=new Comic();
         List<Tag> tags=new LinkedList<>();
         Map<String,Chapter> chapters=new LinkedHashMap<>();

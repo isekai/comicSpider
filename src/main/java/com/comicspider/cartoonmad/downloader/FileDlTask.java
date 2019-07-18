@@ -4,6 +4,7 @@ import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Chapter;
 import com.comicspider.entity.Proxy;
 import com.comicspider.enums.DownloadedEnum;
+import com.comicspider.exception.SpiderException;
 import com.comicspider.service.ChapterService;
 import com.comicspider.service.RedisService;
 import com.comicspider.utils.HttpUtil;
@@ -19,6 +20,8 @@ import java.util.*;
  **/
 @Slf4j
 public class FileDlTask implements Runnable{
+    @Setter
+    private String rootPath;
     @Setter
     private List<Proxy> proxies;
     @Setter
@@ -59,7 +62,7 @@ public class FileDlTask implements Runnable{
     private void download(String url, Chapter chapter,Proxy proxy){
         log.info("开始下载漫画章节！");
         int failNum=0;
-/*        String path= GlobalConfig.ROOT_PATH+"/"+chapter.getComicId();*/
+/*        String path= rootPath+chapter.getComicId();*/
         String comicId=url.substring(url.length()-15,url.length()-11);
         String chapterId=url.substring(url.length()-10,url.length()-7);
         String requestUrl="https://www.cartoonmad.com/comic/comicpic.asp?file=/"+comicId+"/"+chapterId+"/";
@@ -97,31 +100,47 @@ public class FileDlTask implements Runnable{
         }*/
         for (int i=1;i<chapter.getPageNum()+1;i++){
             num=String.format("%03d", i);
-            String path=GlobalConfig.ROOT_PATH+"/"+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
-            Map<String,String> headers=new HashMap<>();
+            String path=rootPath+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
+            Map<String,String> headers=new HashMap<>(16);
             headers.put("Referer", refererUrl+num);
-            byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
-            if (fileByte.length>0){
-                log.info("正在下载第"+num+"页...");
-                IOUtil.writeFile(path, fileByte);
-            }
-            else {
-                data.add(num);
-                log.info("下载图片"+num+"失败！");
+            try {
+                byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
+                if (fileByte.length>0){
+                    log.info("正在下载第"+num+"页...");
+                    IOUtil.writeFile(path, fileByte);
+                }
+                else {
+                    data.add(num);
+                    log.info("下载图片"+num+"失败！");
+                }
+            } catch (SpiderException e){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
         while (data.size()>0){
             num=data.get(0);
-            String path=GlobalConfig.ROOT_PATH+"/"+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
-            Map<String,String> headers=new HashMap<>();
+            String path=rootPath+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
+            Map<String,String> headers=new HashMap<>(16);
             headers.put("Referer", refererUrl+num);
-            byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
-            if (fileByte.length>0){
-                data.remove(num);
-                IOUtil.writeFile(path, fileByte);
-            }else {
-                log.info("下载图片"+num+"失败！正在重试！");
-                failNum++;
+            try {
+                byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
+                if (fileByte.length>0){
+                    data.remove(num);
+                    IOUtil.writeFile(path, fileByte);
+                }else {
+                    log.info("下载图片"+num+"失败！正在重试！");
+                    failNum++;
+                }
+            }catch (SpiderException e){
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
             }
             if (failNum>10){
                 log.info("章节下载失败！");
