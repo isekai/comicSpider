@@ -21,7 +21,6 @@ public class FileController {
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         headers.setContentDispositionFormData("attachment",chapterId+".zip");
         String path= GlobalConfig.ROOT_PATH+comicId+"/"+chapterId;
-        System.out.println(path);
         return new ResponseEntity<>(IOUtil.getZipFile(path), headers, HttpStatus.OK);
     }
 }
