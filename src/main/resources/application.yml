@@ -1,0 +1,64 @@
+#datasource
+spring:
+  jpa:
+    database: mysql
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/comicspider?useUnicode=true&characterEncoding=utf-8&useTimezone=true&serverTimezone=GMT%2B8
+    username: idea
+    password: MyPassword
+    #druid
+    druid:
+      initial-size: 1
+      max-active: 50
+      min-idle: 1
+      max-wait: 1000
+      time-between-eviction-runs-millis: 60000
+      filters: stat
+      stat-view-servlet:
+        enabled: true
+        login-username: druid
+        login-password: password
+
+#redis
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    password:
+
+#MVC
+  mvc:
+    async:
+      request-timeout: -1
+
+#log
+logging:
+  level.root: info
+  level.com.comicSpider: info
+  level.org.springframework.web: info
+  level.org.hibernate: error
+
+
+#comicSpider
+comicSpider:
+  # 线程数量
+  pool-size: 4
+  # 测试url
+  proxy-test-url: https://baidu.com
+  # 漫画下载根目录
+  root-path: /home/doctor/workspace/comic/
+  # 爬虫user-agent
+  user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36
+  cartoonmad:
+    # 漫画开始id
+    start-id: 1024
+    # 单个线程下漫画载个数
+    download-num: 20
+    # 爬虫地址
+    base-url: https://www.cartoonmad.com/comic/
+
+server:
+  port: 8080

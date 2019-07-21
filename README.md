@@ -23,5 +23,8 @@ git clone https://github.com/isekai/comicSpider.git
 * 运行ComicSpiderApplication。
 * 打开浏览器，输入127.0.0.1:8080/proxy/start爬取代理（ip来自xicidaili，可用的极少），打开127.0.0.1:8080/cartoonmad/start爬取漫画资料和URL，打开127.0.0.1:8080/cartoonmad/download开始下载到硬盘。
 
+## 注意
+目前爬取的免费代理实在是太糟糕，使用代理可能会出现频繁的连接重置或超时问题，建议使用自己的ip。
+
 ## 其他
 以上案例、代码及说明仅供学术交流和测试使用，请勿用作商业用途。如需转载请注明出处。
