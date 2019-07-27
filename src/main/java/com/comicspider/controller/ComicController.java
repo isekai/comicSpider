@@ -39,16 +39,6 @@ public class ComicController {
         return comicService.findAllByCategory(category);
     }
 
-    @RequestMapping("/downloaded")
-    public List<Comic> findAllDownloaded(){
-        return comicService.findAllDownloaded();
-    }
-
-    @RequestMapping("/undownloaded")
-    public List<Comic> findAllNotDownloaded(){
-        return comicService.findAllNotDownloaded();
-    }
-
     @RequestMapping("/ended")
     public List<Comic> findAllEnded(){
         return comicService.findAllEnded();

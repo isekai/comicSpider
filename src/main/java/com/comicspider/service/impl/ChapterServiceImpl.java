@@ -2,9 +2,11 @@ package com.comicspider.service.impl;
 
 import com.comicspider.dao.ChapterRepository;
 import com.comicspider.entity.Chapter;
-import com.comicspider.enums.DownloadedEnum;
 import com.comicspider.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,15 +31,11 @@ public class ChapterServiceImpl implements ChapterService {
         return chapterRepository.findAllByComicId(comicId);
     }
 
-/*    @Override
-    public List<Chapter> findAllDownloaded(int comicId) {
-        return chapterRepository.findAllByComicIdAndDownloaded(comicId,DownloadedEnum.DOWNLOADED.getCode());
-    }
-
     @Override
-    public List<Chapter> findAllNotDownloaded(int comicId) {
-        return chapterRepository.findAllByComicIdAndDownloaded(comicId,DownloadedEnum.UN_DOWNLOADED.getCode());
-    }*/
+    public List<Chapter> findLastUpdate(int pageNum,int pageSize) {
+        Pageable pageable= PageRequest.of(pageNum, pageSize,new Sort(Sort.Direction.DESC,"updateTime"));
+        return chapterRepository.findAll(pageable).getContent();
+    }
 
     @Override
     public Chapter findById(int id) {

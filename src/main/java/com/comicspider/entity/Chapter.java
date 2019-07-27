@@ -3,10 +3,12 @@ package com.comicspider.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 表示漫画中的一个章节
@@ -26,11 +28,6 @@ public class Chapter implements Serializable {
     private int comicId;
 
     /**
-     * 是否已下载
-     */
-    private int downloaded;
-
-    /**
      * 章节页数
      */
     private int pageNum;
@@ -44,6 +41,18 @@ public class Chapter implements Serializable {
      * 章节名
      */
     private String chapterName;
+
+    /**
+     * 创建时间
+     */
+    @Column(insertable = false,updatable = false)
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @Column(insertable = false,updatable = false)
+    private Date updateTime;
 
     public Chapter() {
     }

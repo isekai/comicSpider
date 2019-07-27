@@ -49,7 +49,7 @@ public class CartoonmadController {
             for (int j=0;j<downloadNum;j++){
                 comicIds[j]=startId+j;
             }
-            ComicDlTask comicDlTask=new ComicDlTask(comicService,chapterService,tagService,comicTagService,redisService);
+            ComicDlTask comicDlTask=new ComicDlTask(comicService,tagService,comicTagService,redisService);
             comicDlTask.setComicIds(comicIds);
             comicDlTask.setProxies(proxyService.findAll());
             executorService.execute(comicDlTask);

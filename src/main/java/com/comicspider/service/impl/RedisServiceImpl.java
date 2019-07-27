@@ -23,14 +23,19 @@ public class RedisServiceImpl implements RedisService {
     }
 
     @Override
-    public void delete(String key) {
-        redisTemplate.delete(key);
-
+    public void leftPush(String key, Object value) {
+        redisTemplate.opsForList().leftPush(key, value);
     }
 
     @Override
-    public void delete(Collection<String> keys) {
-        redisTemplate.delete(keys);
+    public void leftPushAll(String key, Collection<Object> collection) {
+        redisTemplate.opsForList().leftPushAll(key, collection);
+    }
+
+    @Override
+    public void delete(String key) {
+        redisTemplate.delete(key);
+
     }
 
     @Override
@@ -47,6 +52,11 @@ public class RedisServiceImpl implements RedisService {
     @Override
     public Object get(String key) {
         return redisTemplate.opsForValue().get(key);
+    }
+
+    @Override
+    public Object leftPop(String key) {
+        return redisTemplate.opsForList().leftPop(key);
     }
 
 

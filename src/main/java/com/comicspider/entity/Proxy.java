@@ -42,6 +42,12 @@ public class Proxy {
     @Column(insertable = false,updatable = false)
     private Date createTime;
 
+    /**
+     * 更新时间
+     */
+    @Column(insertable = false,updatable = false)
+    private Date updateTime;
+
     public Proxy(){}
 
     public Proxy(String ip, int port, String type) {

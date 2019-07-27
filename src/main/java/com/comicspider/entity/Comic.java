@@ -23,11 +23,6 @@ public class Comic {
     private int comicId;
 
     /**
-     * 是否已下载
-     */
-    private int downloaded;
-
-    /**
      * 是否已完结
      */
     private int end;

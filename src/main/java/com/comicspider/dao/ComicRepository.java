@@ -12,7 +12,6 @@ import java.util.List;
 public interface ComicRepository extends JpaRepository<Comic,Integer> {
     Comic findByComicName(String comicName);
     List<Comic> findAllByEnd(int end);
-    List<Comic> findAllByDownloaded(int downloaded);
     List<Comic> findAllByCategory(String category);
     List<Comic> findAllByAuthor(String author);
 }

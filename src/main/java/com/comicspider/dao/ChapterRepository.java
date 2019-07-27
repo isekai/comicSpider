@@ -12,5 +12,4 @@ import java.util.List;
 public interface ChapterRepository extends JpaRepository<Chapter,Integer> {
     Chapter findByChapterName(String chapterName);
     List<Chapter> findAllByComicId(int comicId);
-/*    List<Chapter> findAllByComicIdAndDownloaded(int comicId,int downloaded);*/
 }

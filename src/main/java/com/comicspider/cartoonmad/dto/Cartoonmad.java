@@ -16,12 +16,12 @@ import java.util.Map;
 @Data
 public class Cartoonmad {
     private Comic comic;
+    private List<String> chapterUrls;
     private List<Tag> tags;
-    private Map<String,Chapter> chapters;
 
-    public Cartoonmad(Comic comic, List<Tag> tags, Map<String,Chapter> chapters) {
+    public Cartoonmad(Comic comic,List<String> chapterUrls,List<Tag> tags) {
         this.comic = comic;
+        this.chapterUrls=chapterUrls;
         this.tags = tags;
-        this.chapters = chapters;
     }
 }

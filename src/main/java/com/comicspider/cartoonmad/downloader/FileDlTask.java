@@ -1,9 +1,7 @@
 package com.comicspider.cartoonmad.downloader;
 
-import com.comicspider.config.GlobalConfig;
 import com.comicspider.entity.Chapter;
 import com.comicspider.entity.Proxy;
-import com.comicspider.enums.DownloadedEnum;
 import com.comicspider.exception.SpiderException;
 import com.comicspider.service.ChapterService;
 import com.comicspider.service.RedisService;
@@ -21,6 +19,8 @@ import java.util.*;
 @Slf4j
 public class FileDlTask implements Runnable{
     @Setter
+    private int[] comicIds;
+    @Setter
     private String rootPath;
     @Setter
     private List<Proxy> proxies;
@@ -29,78 +29,47 @@ public class FileDlTask implements Runnable{
     @Setter
     private ChapterService chapterService;
 
-//    private Map<String,byte[]> data=new LinkedHashMap<>();
     private List<String> data=new ArrayList<>();
 
-    public FileDlTask(RedisService redisService, ChapterService chapterService) {
+    public FileDlTask(RedisService redisService,ChapterService chapterService) {
         this.redisService = redisService;
         this.chapterService = chapterService;
     }
 
     @Override
     public void run() {
-        String url;
-        Chapter chapter;
-        while (true){
-            synchronized (FileDlTask.class){
-                url=redisService.randomKey();
-                if (url==null){
-                    break;
-                }
-                chapter=(Chapter) redisService.get(url);
-                redisService.delete(url);
-            }
-            Proxy proxy=null;
-            if (proxies.size()>0){
-                proxy=proxies.get((int)(Math.random()*proxies.size()));
-            }
-            download(url, chapter,proxy);
-        }
-
-    }
-
-    private void download(String url, Chapter chapter,Proxy proxy){
-        log.info("开始下载漫画章节！");
-        int failNum=0;
-/*        String path= rootPath+chapter.getComicId();*/
-        String comicId=url.substring(url.length()-15,url.length()-11);
-        String chapterId=url.substring(url.length()-10,url.length()-7);
-        String requestUrl="https://www.cartoonmad.com/comic/comicpic.asp?file=/"+comicId+"/"+chapterId+"/";
-        String refererUrl=url.substring(0,url.length()-3);
-        String num;
-/*        for (int i=1;i<chapter.getPageNum()+1;i++){
-            num=String.format("%03d", i);
-            log.info("正在下载第"+num+"页...");
-            Map<String,String> headers=new HashMap<>();
-            headers.put("Referer", refererUrl+num);
-            for (int j=0;j<3;j++){
-                try {
-                    byte[] fileByte= HttpUtil.get(requestUrl+num+"&rimg=1", proxy,headers);
-                    if (fileByte.length>0){
-                        data.put(num+".jpg", fileByte);
+        Proxy proxy=null;
+        for (int comicId : comicIds){
+            String key=String.valueOf(comicId);
+            if (redisService.hasKey(key)){
+                while (true){
+                    String url= (String) redisService.leftPop(key);
+                    if (proxies.size()>0){
+                        proxy=proxies.get((int)(Math.random()*proxies.size()));
+                    }
+                    if (url==null){
                         break;
                     }
-                } catch (SpiderException e){
-                    log.info("第"+i+"次下载图片失败！ "+e.getMsg());
+                    download(url,proxy);
                 }
             }
-            if (data.size()<i){
-                log.info("下载章节失败！");
-                break;
-            }
         }
-        if (data.size()==chapter.getPageNum()){
-            Chapter newChapter=chapterService.findById(chapter.getChapterId());
-            newChapter.setDownloaded(DownloadedEnum.DOWNLOADED.getCode());
-            chapterService.saveOrUpdate(newChapter);
-            IOUtil.zipFileOutput(path+"/"+chapter.getChapterId(), data);
-        }
-        else {
-            redisService.set(url, chapter);
-        }*/
+    }
+
+    private void download(String url,Proxy proxy){
+        log.info("开始下载漫画章节！");
+        int failNum=0;
+        Chapter chapter= new Chapter();
+        chapter.setComicId(Integer.parseInt(url.substring(url.length()-15,url.length()-11)));
+        chapter.setChapterName(url.substring(url.length()-10,url.length()-7));
+        chapter.setPageNum(Integer.parseInt(url.substring(url.length()-6,url.length()-3)));
+        chapter.setChapterType(Integer.parseInt(url.substring(url.length()-7,url.length()-6)));
+        String requestUrl="https://www.cartoonmad.com/comic/comicpic.asp?file=/"+chapter.getComicId()+"/"+chapter.getChapterName()+"/";
+        String refererUrl=url.substring(0,url.length()-3);
+        String num;
         for (int i=1;i<chapter.getPageNum()+1;i++){
             num=String.format("%03d", i);
-            String path=rootPath+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
+            String path=rootPath+chapter.getComicId()+"/"+chapter.getChapterName()+"/"+num;
             Map<String,String> headers=new HashMap<>(16);
             headers.put("Referer", refererUrl+num);
             try {
@@ -123,7 +92,7 @@ public class FileDlTask implements Runnable{
         }
         while (data.size()>0){
             num=data.get(0);
-            String path=rootPath+chapter.getComicId()+"/"+chapter.getChapterId()+"/"+num;
+            String path=rootPath+chapter.getComicId()+"/"+chapter.getChapterName()+"/"+num;
             Map<String,String> headers=new HashMap<>(16);
             headers.put("Referer", refererUrl+num);
             try {
@@ -144,14 +113,12 @@ public class FileDlTask implements Runnable{
             }
             if (failNum>10){
                 log.info("章节下载失败！");
-                redisService.set(url,chapter);
+                redisService.leftPush(String.valueOf(chapter.getComicId()), url);
                 break;
             }
         }
         if (data.size()==0){
-            Chapter newChapter=chapterService.findById(chapter.getChapterId());
-            newChapter.setDownloaded(DownloadedEnum.DOWNLOADED.getCode());
-            chapterService.saveOrUpdate(newChapter);
+            chapterService.saveOrUpdate(new Chapter());
         }
     }
 

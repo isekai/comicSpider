@@ -2,9 +2,11 @@ package com.comicspider.entity;
 
 import lombok.Data;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 
 /**
  * @Author doctor
@@ -24,6 +26,18 @@ public class Tag {
      * 标签名
      */
     private String tagName;
+
+    /**
+     * 创建时间
+     */
+    @Column(insertable = false,updatable = false)
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @Column(insertable = false,updatable = false)
+    private Date updateTime;
 
     public Tag(){}
 

@@ -2,7 +2,6 @@ package com.comicspider.service.impl;
 
 import com.comicspider.dao.ComicRepository;
 import com.comicspider.entity.Comic;
-import com.comicspider.enums.DownloadedEnum;
 import com.comicspider.enums.EndEnum;
 import com.comicspider.service.ComicService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -27,16 +25,6 @@ public class ComicServiceImpl implements ComicService {
     @Override
     public Comic findByComicName(String comicName) {
         return comicRepository.findByComicName(comicName);
-    }
-
-    @Override
-    public List<Comic> findAllDownloaded() {
-        return comicRepository.findAllByDownloaded(DownloadedEnum.DOWNLOADED.getCode());
-    }
-
-    @Override
-    public List<Comic> findAllNotDownloaded() {
-        return comicRepository.findAllByDownloaded(DownloadedEnum.UN_DOWNLOADED.getCode());
     }
 
     @Override

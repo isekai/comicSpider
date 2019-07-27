@@ -1,9 +1,7 @@
 package com.comicspider.dao;
 
 import com.comicspider.entity.Comic;
-import com.comicspider.enums.DownloadedEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +28,6 @@ public class ComicRepositoryTest {
         comic.setComicName("妄想学生会");
         comic.setAuthor("氏家卜全");
         comic.setCategory("少年漫画");
-        comic.setDownloaded(DownloadedEnum.UN_DOWNLOADED.getCode());
         comicRepository.save(comic);
     }
 
