@@ -1,7 +1,8 @@
 package com.comicspider.domain.dto.response;
 
-import com.comicspider.domain.Comic;
-import lombok.Data;
+import com.comicspider.domain.Author;
+import com.comicspider.domain.Tag;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  * @date 2019/11/3
  **/
 @Data
+@NoArgsConstructor
 public class LastUpdateResponseDTO {
 
     private String category;
@@ -23,20 +25,16 @@ public class LastUpdateResponseDTO {
     private String publish;
     private String cover;
     private String description;
-    private int clickNum;
-    private int status;
-
-    private String authorName;
-    private String authorAlias;
-    private String authorCountry;
-    private String socialAccount;
+    private Integer clickNum;
+    private Integer status;
 
     private String chapterName;
     private Integer chapterNum;
     private Integer pageSum;
     private Integer chapterType;
 
-    private List<String> tags;
+    private List<Author> authors;
+    private List<Tag> tags;
 
     private Date updateTime;
 }

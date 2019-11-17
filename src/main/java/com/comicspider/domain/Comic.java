@@ -1,5 +1,6 @@
 package com.comicspider.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -16,6 +17,7 @@ import javax.persistence.Table;
 @Data
 public class Comic extends AbstractEntity {
 
+    @JsonIgnore
     private String id;
     private String category;
     private String comicName;

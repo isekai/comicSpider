@@ -1,5 +1,6 @@
 package com.comicspider.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.Entity;
@@ -16,7 +17,8 @@ import javax.persistence.Table;
 @Data
 public class Tag extends AbstractEntity {
 
-    private String tagId;
+    @JsonIgnore
+    private String id;
     private String tagName;
 
 }
